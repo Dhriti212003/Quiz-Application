@@ -1,30 +1,32 @@
-
 const questions = [
-    {
-        question: "Which language runs in the browser?",
-        options: ["Java", "Python", "JavaScript", "C++"],
-        answer: "JavaScript"
-    },
-    {
-        question: ".js is the file extension for?",
-        options: ["Java", "Python", "JavaScript", "C++"],
-        answer: "JavaScript"
-    },
-    {
-        question: "Which HTML5 element is best suited for defining the footer of a document or section?",
-        options: ["<bottom>", "<footer>", "<section>", "<aside>"],
-        answer: "<footer>"
-    },
-    {
-        question: "Which CSS property is used to change the text color of an element?",
-        options: ["font-color", "text-color", "color", "background-color"],
-        answer: "color"
-    },
-    {
-        question: "Which keyword is used to declare a block-scoped local variable in modern JavaScript (ES6+)?",
-        options: ["let", "var", "dim", "define"],
-        answer: "let"
-    }
+  {
+    question: "Which language runs in the browser?",
+    options: ["Java", "Python", "JavaScript", "C++"],
+    answer: "JavaScript",
+  },
+  {
+    question: ".js is the file extension for?",
+    options: ["Java", "Python", "JavaScript", "C++"],
+    answer: "JavaScript",
+  },
+  {
+    question:
+      "Which HTML5 element is best suited for defining the footer of a document or section?",
+    options: ["<bottom>", "<footer>", "<section>", "<aside>"],
+    answer: "<footer>",
+  },
+  {
+    question:
+      "Which CSS property is used to change the text color of an element?",
+    options: ["font-color", "text-color", "color", "background-color"],
+    answer: "color",
+  },
+  {
+    question:
+      "Which keyword is used to declare a block-scoped local variable in modern JavaScript (ES6+)?",
+    options: ["let", "var", "dim", "define"],
+    answer: "let",
+  },
 ];
 
 let questionNo = document.querySelector("#questionNo");
@@ -43,133 +45,95 @@ let selectedOption = "";
 let answered = false;
 let score = 0;
 
-
-// Display current question
 function showQuestion() {
+  let currQuestion = questions[currentQCnt];
 
-    let currQuestion = questions[currentQCnt];
+  questionElement.innerText = currQuestion.question;
+  questionNo.innerText = currentQCnt + 1;
 
-    questionElement.innerText = currQuestion.question;
-    questionNo.innerText = currentQCnt + 1;
+  optionsElement.innerHTML = "";
 
-    optionsElement.innerHTML = "";
+  answered = false;
+  selectedOption = "";
 
-    answered = false;
-    selectedOption = "";
+  currQuestion.options.forEach((option) => {
+    let btn = document.createElement("button");
 
-    currQuestion.options.forEach((option) => {
+    btn.innerText = option;
+    btn.classList.add("optionBtn");
 
-        let btn = document.createElement("button");
+    optionsElement.appendChild(btn);
 
-        btn.innerText = option;
-        btn.classList.add("optionBtn");
+    btn.addEventListener("click", () => {
+      if (answered) return;
 
-        optionsElement.appendChild(btn);
+      answered = true;
+      selectedOption = btn.innerText;
 
-        btn.addEventListener("click", () => {
+      if (selectedOption === currQuestion.answer) {
+        btn.classList.add("selectedCorrect");
+      } else {
+        btn.classList.add("selectedWrong");
 
-            if (answered) return;
+        let allButtons = optionsElement.querySelectorAll(".optionBtn");
 
-            answered = true;
-            selectedOption = btn.innerText;
-
-            if (selectedOption === currQuestion.answer) {
-
-                btn.classList.add("selectedCorrect");
-
-            } else {
-
-                btn.classList.add("selectedWrong");
-
-                let allButtons = optionsElement.querySelectorAll(".optionBtn");
-
-                allButtons.forEach((button) => {
-
-                    if (button.innerText === currQuestion.answer) {
-                        button.classList.add("selectedCorrect");
-                    }
-
-                });
-            }
-
+        allButtons.forEach((button) => {
+          if (button.innerText === currQuestion.answer) {
+            button.classList.add("selectedCorrect");
+          }
         });
-
+      }
     });
-
+  });
 }
 
-
-// Check selected answer and update score
 function checkAnswer() {
+  let currQuestion = questions[currentQCnt];
 
-    let currQuestion = questions[currentQCnt];
-
-    if (selectedOption === currQuestion.answer) {
-        score++;
-    }
-
+  if (selectedOption === currQuestion.answer) {
+    score++;
+  }
 }
 
-
-// Display final result
 function result() {
+  questionContainer.classList.add("hidden");
 
-    questionContainer.classList.add("hidden");
+  resultContainer.classList.remove("hidden");
 
-    resultContainer.classList.remove("hidden");
-
-    scoreElement.innerText =
-        `Your score is ${score}/${questions.length}`;
-
+  scoreElement.innerText = `Your score is ${score}/${questions.length}`;
 }
 
-
-// Restart quiz
 function restartQuiz() {
+  currentQCnt = 0;
+  score = 0;
+  selectedOption = "";
+  answered = false;
 
-    currentQCnt = 0;
-    score = 0;
-    selectedOption = "";
-    answered = false;
+  resultContainer.classList.add("hidden");
+  questionContainer.classList.remove("hidden");
 
-    resultContainer.classList.add("hidden");
-    questionContainer.classList.remove("hidden");
+  showQuestion();
+}
+
+nextBtn.addEventListener("click", () => {
+  if (!answered) {
+    alert("Please select an answer!");
+    return;
+  }
+
+  checkAnswer();
+
+  if (currentQCnt < questions.length - 1) {
+    currentQCnt++;
 
     showQuestion();
+  } else {
+    result();
 
-}
-
-
-// Next button functionality
-nextBtn.addEventListener("click", () => {
-
-    if (!answered) {
-        alert("Please select an answer!");
-        return;
-    }
-
-    checkAnswer();
-
-    if (currentQCnt < questions.length - 1) {
-
-        currentQCnt++;
-
-        showQuestion();
-
-    } else {
-
-        result();
-
-        console.log("Quiz completed!");
-
-    }
-
+    console.log("Quiz completed!");
+  }
 });
 
-
-// Restart button functionality
 restartBtn.addEventListener("click", restartQuiz);
 
-
-// Initial question
 showQuestion();
